@@ -1,6 +1,3 @@
-// function hello() {
-//   const name = process.env.MY_NAME;
-//   console.log(`Hello, ${name}!`);
-// }
+import Trader from "./trader";
 
-// hello();
+export default Trader;
