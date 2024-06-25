@@ -3,8 +3,6 @@ import defaults from "./config";
 import EventEmitter from "eventemitter3";
 import interceptors from "./interceptors";
 
-//const tokens = require("./resources/tokens");
-
 class Base {
   public _emitter: EventEmitter;
   config: any;
@@ -16,25 +14,46 @@ class Base {
 
     interceptors.setup(this);
   }
-} // Base
 
-/**
- * Add a listener for a given event.
- *
- * @instance
- * @memberof TDAmeritrade
- * @param {'login'|'token'} event The event name
- * @param {EventEmitter.EventListener<any, any>} fn Callback function
- * @returns {EventEmitter<string | symbol, any>} Event emitter
- */
+  on(event: any, fn: any) {
+    return this._emitter.on(event, fn);
+  }
 
-// function on(event: any, fn: any) {
-//   return this._emitter.on(event, fn);
-// }
-// Base.prototype.on = on;
-// Base.prototype.getAccessToken = tokens.getAccessToken;
-// Base.prototype.refreshAccessToken = tokens.refreshAccessToken;
-// Base.prototype.isAccessTokenExpired = tokens.isAccessTokenExpired;
-// Base.prototype.isRefreshTokenExpired = tokens.isRefreshTokenExpired;
+  getAccessToken(authCode: string) {
+    const params = new URLSearchParams();
+    params.append("grant_type", "authorization_code");
+    params.append("access_type", this.config.accessType || "offline");
+    params.append("client_id", this.config.apiKey);
+    params.append("redirect_uri", this.config.redirectUri);
+    params.append("code", authCode || this.config.authCode);
+
+    delete this.config.accessToken;
+
+    return this.axios.post("/oauth2/token", params);
+  }
+
+  refreshAccessToken(refreshToken: any) {
+    const params = new URLSearchParams();
+    params.append("grant_type", "refresh_token");
+    params.append("access_type", this.config.accessType || "offline");
+    params.append("client_id", this.config.apiKey);
+    params.append("refresh_token", refreshToken || this.config.refreshToken);
+
+    delete this.config.accessToken;
+
+    return this.axios.post("/oauth2/token", params);
+  }
+
+  isAccessTokenExpired() {
+    return this.config.accessTokenExpiresAt
+      ? new Date(this.config.accessTokenExpiresAt).getTime() <= Date.now()
+      : true;
+  }
+  isRefreshTokenExpired() {
+    return this.config.refreshTokenExpiresAt
+      ? new Date(this.config.refreshTokenExpiresAt).getTime() <= Date.now()
+      : true;
+  }
+}
 
 export default Base;

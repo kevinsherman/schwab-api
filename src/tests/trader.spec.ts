@@ -4,6 +4,7 @@ import Trader from "../trader";
 describe("trader", () => {
   it("hello", () => {
     const name = process.env.MY_NAME;
-    expect(Trader.hello()).toBe(`Hello, ${name}!`);
+    const foo = new Trader({});
+    expect(foo.hello()).toBe(`Hello, ${name}!`);
   });
 });
