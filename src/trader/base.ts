@@ -5,7 +5,7 @@ import interceptors from "./interceptors";
 
 class Base {
   public _emitter: EventEmitter;
-  config: any;
+  config: Config;
   axios;
   derp: string = "will it rain?";
   constructor(config: Config) {
