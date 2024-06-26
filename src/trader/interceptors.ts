@@ -7,9 +7,6 @@ function appendAccessToken(base: Base) {
     if (base.config.accessToken) {
       request.headers.Authorization = `Bearer ${base.config.accessToken}`;
     }
-
-    console.log(request.headers);
-
     return request;
   });
 }
