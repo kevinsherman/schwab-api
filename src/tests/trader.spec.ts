@@ -19,7 +19,7 @@ describe("trader", () => {
       returnFullResponse: true,
     });
     const dd = await foo.getDummyData();
-    const headers = dd.request._headers.authorization;
+    const headers = dd.request.getHeaders()["authorization"];
     expect(headers).toEqual("Bearer JRR Tolkien");
   });
 
@@ -30,7 +30,8 @@ describe("trader", () => {
     });
     const dd = await foo.getDummyData();
     const dd_data = dd.data;
-    // const ddd = foo.getDerp(); what is this?
+    // console.log(foo.getDerp()); // what is this?
+
     expect(dd_data.length).toBeTruthy();
   });
 });
