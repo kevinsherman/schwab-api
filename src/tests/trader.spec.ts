@@ -19,8 +19,8 @@ describe("trader", () => {
       returnFullResponse: true,
     });
     const dd = await foo.getDummyData();
-    const headers = dd.headers.getAuthorization;
-    expect(dd.headers).toBe("Bearer JRR Tolkien");
+    const headers = dd.request._headers.authorization;
+    expect(headers).toEqual("Bearer JRR Tolkien");
   });
 
   it("returns data", async () => {
