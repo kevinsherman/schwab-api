@@ -8,9 +8,9 @@ class Base {
   config: Config;
   axios;
   derp: string = "will it rain?";
-  constructor(config: Config) {
+  constructor(config: Partial<Config>) {
     this._emitter = new EventEmitter();
-    this.config = Object.assign({}, defaults, config);
+    this.config = Object.assign({}, defaults, config) as Config;
     this.axios = axios.create({ baseURL: this.config.baseURL });
 
     interceptors.setup(this);
@@ -23,10 +23,10 @@ class Base {
   getAccessToken(authCode: string) {
     const params = new URLSearchParams();
     params.append("grant_type", "authorization_code");
-    params.append("access_type", this.config.accessType || "offline");
-    params.append("client_id", this.config.apiKey);
-    params.append("redirect_uri", this.config.redirectUri);
-    params.append("code", authCode || this.config.authCode);
+    //    params.append("access_type", this.config.accessType || "offline");
+    params.append("client_id", this.config.apiKey!);
+    params.append("redirect_uri", this.config.redirectUri!);
+    //    params.append("code", authCode || this.config.authCode);
 
     delete this.config.accessToken;
 
@@ -36,8 +36,8 @@ class Base {
   refreshAccessToken(refreshToken: any) {
     const params = new URLSearchParams();
     params.append("grant_type", "refresh_token");
-    params.append("access_type", this.config.accessType || "offline");
-    params.append("client_id", this.config.apiKey);
+    // params.append("access_type", this.config.accessType || "offline");
+    // params.append("client_id", this.config.apiKey);
     params.append("refresh_token", refreshToken || this.config.refreshToken);
 
     delete this.config.accessToken;
