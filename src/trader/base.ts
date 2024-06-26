@@ -1,14 +1,14 @@
 import axios from "axios";
-import defaults from "./config";
+import defaults, { Config } from "./config";
 import EventEmitter from "eventemitter3";
 import interceptors from "./interceptors";
 
 class Base {
   public _emitter: EventEmitter;
   config: any;
-  axios: any;
+  axios;
   derp: string = "will it rain?";
-  constructor(config: any) {
+  constructor(config: Config) {
     this._emitter = new EventEmitter();
     this.config = Object.assign({}, defaults, config);
     this.axios = axios.create({ baseURL: this.config.baseURL });

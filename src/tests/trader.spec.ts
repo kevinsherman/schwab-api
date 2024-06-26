@@ -2,16 +2,35 @@ import "dotenv/config";
 import Trader from "../trader";
 
 describe("trader", () => {
-  it("hello", async () => {
+  it("can read from .env file", async () => {
+    const name = process.env.MY_NAME;
+    expect(name).toBe("Kevin");
+  });
+
+  it("trader can read from .env file", async () => {
     const name = process.env.MY_NAME;
     const foo = new Trader({});
-    foo.config.accessToken = "JRR Tolkien";
     expect(foo.hello()).toBe(`Hello, ${name}!`);
+  });
 
+  it("sets auth header", async () => {
+    const foo = new Trader({
+      accessToken: "JRR Tolkien",
+      returnFullResponse: true,
+    });
     const dd = await foo.getDummyData();
+    const headers = dd.headers.getAuthorization;
+    expect(dd.headers).toBe("Bearer JRR Tolkien");
+  });
 
-    const ddd = foo.getDerp();
-
-    console.log(JSON.stringify(dd.length, null, 2));
+  it("returns data", async () => {
+    const foo = new Trader({
+      accessToken: "JRR Tolkien",
+      returnFullResponse: true,
+    });
+    const dd = await foo.getDummyData();
+    const dd_data = dd.data;
+    // const ddd = foo.getDerp(); what is this?
+    expect(dd_data.length).toBeTruthy();
   });
 });

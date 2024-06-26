@@ -1,5 +1,6 @@
 import "dotenv/config";
 import Base from "./base";
+import { Config } from "./config";
 
 class Trader extends Base {
   hello() {
