@@ -1,50 +1,44 @@
 import axios from "axios";
-import Trader from "./trader";
 import Base from "./base";
 import get from "lodash.get";
 
-function appendAccessToken(trader: Trader) {
-  trader.axios.interceptors.request.use((request: any) => {
-    if (trader.config.accessToken) {
-      request.headers.Authorization = `Bearer ${trader.config.accessToken}`;
+function appendAccessToken(base: Base) {
+  base.axios.interceptors.request.use((request: any) => {
+    if (base.config.accessToken) {
+      request.headers.Authorization = `Bearer ${base.config.accessToken}`;
     }
+
+    console.log(request.headers);
 
     return request;
   });
 }
 
-function updateConfigOnNewToken(trader: Trader) {
-  trader.axios.interceptors.response.use((response: any) => {
+function updateConfigOnNewToken(base: Base) {
+  base.axios.interceptors.response.use((response: any) => {
     if (response.config.url === "/oauth2/token") {
       const token = parseToken(response.data);
-      Object.assign(trader.config, token);
-      trader._emitter.emit("token", token);
+      Object.assign(base.config, token);
+      base._emitter.emit("token", token);
     }
 
     return response;
   });
 }
 
-/**
- * Refresh token and retry request on status code 401.
- *
- * @private
- * @param {Base} client Client
- * @returns {void}
- */
-function refreshAndRetry(trader: Trader) {
-  trader.axios.interceptors.response.use(undefined, (error: any) => {
+function refreshAndRetry(base: Base) {
+  base.axios.interceptors.response.use(undefined, (error: any) => {
     const originalRequest = error.config;
     const condition =
-      trader.config.refreshAndRetry &&
+      base.config.refreshAndRetry &&
       get(error, "response.status") === 401 &&
       !originalRequest._retry &&
       originalRequest.url !== "/oauth2/token";
 
     if (condition) {
       originalRequest._retry = true;
-      return trader.refreshAccessToken(trader.config.accessToken).then(() => {
-        originalRequest.headers.Authorization = `Bearer ${trader.config.accessToken}`;
+      return base.refreshAccessToken(base.config.accessToken).then(() => {
+        originalRequest.headers.Authorization = `Bearer ${base.config.accessToken}`;
         return axios(originalRequest);
       });
     }
@@ -53,19 +47,17 @@ function refreshAndRetry(trader: Trader) {
   });
 }
 
-function fullResponse(trader: Trader) {
-  trader.axios.interceptors.response.use(
+function fullResponse(base: Base) {
+  base.axios.interceptors.response.use(
     (response: any) => {
-      return trader.config.returnFullResponse
-        ? response
-        : get(response, "data");
+      return base.config.returnFullResponse ? response : get(response, "data");
     },
     (error: any) => {
       // we don't want to Promise.reject() as it will
       // trigger an ERR_UNHANDLED_REJECTION error.
 
       // axios response
-      if (trader.config.returnFullResponse) {
+      if (base.config.returnFullResponse) {
         throw error;
       }
 
@@ -87,6 +79,10 @@ function fullResponse(trader: Trader) {
   );
 }
 
+function poopToken(_this: any) {
+  return _this.derp;
+}
+
 //#region helpers
 
 function parseToken(data: any) {
@@ -101,7 +97,7 @@ function parseToken(data: any) {
 
   // remove props with falsey values
   return filterObj(res, (value: any) => value);
-} // parseToken()
+}
 
 function timeFromNow(seconds: number) {
   return seconds
@@ -127,15 +123,10 @@ const interceptors = {
   fullResponse,
 };
 
-/**
- * Add all interceptors to the client's axios instance.
- *
- * @private
- * @param {Base} client Client
- * @returns {void}
- */
 function setup(base: Base) {
-  Object.keys(interceptors).forEach((key: string) => interceptors[key](base));
+  Object.keys(interceptors).forEach((key) =>
+    interceptors[key as keyof typeof interceptors](base)
+  );
 }
 
 export default Object.assign({}, interceptors, { setup });

@@ -7,6 +7,7 @@ class Base {
   public _emitter: EventEmitter;
   config: any;
   axios: any;
+  derp: string = "will it rain?";
   constructor(config: any) {
     this._emitter = new EventEmitter();
     this.config = Object.assign({}, defaults, config);
