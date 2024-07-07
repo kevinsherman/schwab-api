@@ -1,6 +1,6 @@
 import Trader from "./Trader";
 import mongo from "./config/mongo";
-import { getTokenFromDb } from "./func/getTokenFromDb";
+import { getTokenFromDb } from "./resources/tokens";
 
 // initialize database
 await mongo.connect();

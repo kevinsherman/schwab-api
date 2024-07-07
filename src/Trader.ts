@@ -33,44 +33,6 @@ class Trader {
   async getAccountNumbers() {
     return this.axios.get("/accounts/accountNumbers");
   }
-  async refreshAccessToken() {
-    const data = {
-      grant_type: "refresh_token",
-      refresh_token: this.config.refreshToken,
-    };
-
-    const options = {
-      headers: {
-        Authorization: `Basic ${this.config.authorization}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    };
-
-    const authAxios = axios.create({
-      baseURL: "https://api.schwabapi.com",
-    });
-
-    const token = await authAxios.post("/v1/oauth/token", data, options);
-
-    const newAccessToken = token.data.access_token;
-    const newExpiry = Math.round(Date.now() / 1000) + token.data.expires_in;
-    this.config.accessToken = newAccessToken;
-    this.config.accessTokenExpiresAt = newExpiry;
-
-    const query = { refresh_token: this.config.refreshToken };
-    const update = {
-      $set: {
-        access_token: newAccessToken,
-        accessTokenExpiresAt: newExpiry,
-        accessTokenExpiry: new Date(newExpiry * 1000).toString(),
-      },
-    };
-    await this._db
-      .collection("tokens_schwab")
-      .updateOne(query, update, { upsert: true });
-
-    return token;
-  }
 }
 
 export default Trader;
