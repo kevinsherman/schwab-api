@@ -13,7 +13,6 @@ if (!token) {
 
 const config = {
   db,
-  baseURL: "https://api.schwabapi.com/trader/v1",
   token,
 };
 
