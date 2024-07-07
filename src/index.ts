@@ -15,7 +15,7 @@ if (!token) {
 const trader = new Trader(db, token);
 
 // attempt to get account information
-const accounts = await trader.getAccountNumbers();
+const accounts = await trader.getAccounts();
 console.log(JSON.stringify(accounts.data, null, 2));
 
 await mongo.close();

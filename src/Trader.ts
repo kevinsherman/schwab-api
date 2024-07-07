@@ -1,10 +1,9 @@
-import axios from "axios";
+import axios, { AxiosInstance } from "axios";
 import { Db } from "mongodb";
-import qs from "qs";
 
 class Trader {
   config: any = {};
-  axios;
+  axios: AxiosInstance;
   _db: Db;
 
   constructor(db: Db, thisConfig?: any) {
@@ -26,7 +25,7 @@ class Trader {
     this.init();
   }
 
-  async getAcccounts() {
+  async getAccounts() {
     return this.axios.get("/accounts");
   }
 
@@ -45,7 +44,7 @@ class Trader {
     this.axios.interceptors.response.use(
       (response: any) => response,
       (error: any) => {
-        if (error.zresponse.status === 401) {
+        if (error.response.status === 401) {
           const originalRequest = error.config;
           const condition =
             this.config.refreshAndRetry &&
@@ -67,10 +66,10 @@ class Trader {
   }
 
   async refreshAccessToken() {
-    const data = qs.stringify({
+    const data = {
       grant_type: "refresh_token",
       refresh_token: this.config.refreshToken,
-    });
+    };
 
     const options = {
       headers: {
@@ -79,22 +78,23 @@ class Trader {
       },
     };
 
-    const token = await this.axios.post(
-      "https://api.schwabapi.com/v1/oauth/token",
-      data,
-      options
-    );
+    const authAxios = axios.create({
+      baseURL: "https://api.schwabapi.com",
+    });
+
+    const token = await authAxios.post("/v1/oauth/token", data, options);
 
     const newAccessToken = token.data.access_token;
     const newExpiry = Math.round(Date.now() / 1000) + token.data.expires_in;
     this.config.accessToken = newAccessToken;
     this.config.accessTokenExpiresAt = newExpiry;
 
-    const query = { refreshToken: this.config.refreshToken };
+    const query = { refresh_token: this.config.refreshToken };
     const update = {
       $set: {
-        accessToken: newAccessToken,
+        access_token: newAccessToken,
         accessTokenExpiresAt: newExpiry,
+        accessTokenExpiry: new Date(newExpiry * 1000).toString(),
       },
     };
     await this._db
