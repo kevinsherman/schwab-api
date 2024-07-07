@@ -6,10 +6,9 @@ export function getTokenFromDb(db: Db) {
 }
 
 export async function refreshAccessToken(client: any) {
-  console.log("refreshing access token...");
   const data = {
     grant_type: "refresh_token",
-    refresh_token: client.config.refreshToken,
+    refresh_token: client.config.token.refresh_token,
   };
 
   const options = {
@@ -25,10 +24,10 @@ export async function refreshAccessToken(client: any) {
 
   const newAccessToken = token.data.access_token;
   const newExpiry = Math.round(Date.now() / 1000) + token.data.expires_in;
-  client.config.accessToken = newAccessToken;
+  client.config.token.access_token = newAccessToken;
   client.config.accessTokenExpiresAt = newExpiry;
 
-  const query = { refresh_token: client.config.refreshToken };
+  const query = { refresh_token: client.config.token.refresh_token };
   const update = {
     $set: {
       access_token: newAccessToken,
@@ -36,7 +35,7 @@ export async function refreshAccessToken(client: any) {
       accessTokenExpiry: new Date(newExpiry * 1000).toString(),
     },
   };
-  await client._db
+  await client.config.db
     .collection("tokens_schwab")
     .updateOne(query, update, { upsert: true });
 

@@ -6,13 +6,19 @@ import { getTokenFromDb } from "./resources/tokens";
 await mongo.connect();
 const db = mongo.db("stratbot_db");
 
-const token = await getTokenFromDb(db);
+const token = (await getTokenFromDb(db)) as any;
 if (!token) {
   console.log("No token found, must login to create token.");
 }
 
+const config = {
+  db,
+  baseURL: "https://api.schwabapi.com/trader/v1",
+  token,
+};
+
 // initialize trader
-const trader = new Trader(db, token);
+const trader = new Trader(config);
 
 // attempt to get account information
 const accounts = await trader.getAccounts();

@@ -1,17 +1,17 @@
 import { AxiosError } from "axios";
-import Trader from "./Trader";
+import Base from "./Base";
 import { refreshAccessToken } from "./resources/tokens";
 
-function appendAccessTokenInterceptor(client: Trader) {
+function appendAccessTokenInterceptor(client: Base) {
   client.axios.interceptors.request.use((request) => {
-    if (client.config.accessToken) {
-      request.headers.Authorization = `Bearer ${client.config.accessToken}`;
+    if (client.config.token.access_token) {
+      request.headers.Authorization = `Bearer ${client.config.token.access_token}`;
     }
     return request;
   });
 }
 
-function refreshAndRetryInterceptor(client: Trader) {
+function refreshAndRetryInterceptor(client: Base) {
   client.axios.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
@@ -26,7 +26,7 @@ function refreshAndRetryInterceptor(client: Trader) {
         return refreshAccessToken(client).then(() => {
           //@ts-ignore
           originalRequest._retry = true;
-          originalRequest.headers.Authorization = `Bearer ${client.config.accessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${client.config.token.access_token}`;
           return client.axios(originalRequest);
         });
       }
@@ -40,7 +40,7 @@ const interceptors = {
   refreshAndRetryInterceptor,
 };
 
-export function setupInterceptors(client: Trader) {
+export function setupInterceptors(client: Base) {
   Object.keys(interceptors).forEach((key) => {
     interceptors[key](client);
   });
