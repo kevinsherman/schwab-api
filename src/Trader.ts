@@ -1,6 +1,3 @@
-import axios, { AxiosInstance } from "axios";
-import { Db } from "mongodb";
-import { setupInterceptors } from "./interceptors";
 import Base from "./Base";
 
 class Trader extends Base {

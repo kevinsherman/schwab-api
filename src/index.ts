@@ -1,3 +1,4 @@
+import MarketData from "./MarketData";
 import Trader from "./Trader";
 import mongo from "./config/mongo";
 import { getTokenFromDb } from "./resources/tokens";
@@ -20,7 +21,11 @@ const config = {
 const trader = new Trader(config);
 
 // attempt to get account information
-const accounts = await trader.getAccounts();
-console.log(JSON.stringify(accounts.data, null, 2));
+// const accounts = await trader.getAccounts();
+// console.log(JSON.stringify(accounts.data, null, 2));
+
+const md = new MarketData(config);
+const result = await md.getPriceHistory();
+console.log(JSON.stringify(result.data, null, 2));
 
 await mongo.close();
