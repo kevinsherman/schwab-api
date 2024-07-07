@@ -1,15 +1,21 @@
 import axios, { AxiosInstance } from "axios";
 import { Db } from "mongodb";
 import { setupInterceptors } from "./interceptors";
+import EventEmitter from "eventemitter3";
 
 class Base {
   config: any;
   axios: AxiosInstance;
+  emitter = new EventEmitter();
 
   constructor(config: Partial<Config>) {
     this.config = Object.assign({}, defaults, config, () => {});
     this.axios = axios.create({ baseURL: this.config.baseURL });
     setupInterceptors(this);
+  }
+
+  on(event, fn) {
+    return this.emitter.on(event, fn);
   }
 }
 

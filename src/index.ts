@@ -25,7 +25,24 @@ const trader = new Trader(config);
 // console.log(JSON.stringify(accounts.data, null, 2));
 
 const md = new MarketData(config);
+md.on("token", async (payload: any) => {
+  // save token to database...
+  await saveTokenToDb(payload);
+});
 const result = await md.getPriceHistory();
 console.log(JSON.stringify(result.data, null, 2));
 
 await mongo.close();
+
+async function saveTokenToDb(token: any) {
+  const { refreshToken, ...rest } = token;
+  const query = { refreshToken };
+  const update = {
+    $set: {
+      ...rest,
+    },
+  };
+  await db
+    .collection("tokens_schwab")
+    .updateOne(query, update, { upsert: true });
+}
