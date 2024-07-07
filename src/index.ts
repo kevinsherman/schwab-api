@@ -19,16 +19,14 @@ const config = {
 
 // initialize trader
 const trader = new Trader(config);
+trader.on("token", saveTokenToDb);
 
 // attempt to get account information
-// const accounts = await trader.getAccounts();
-// console.log(JSON.stringify(accounts.data, null, 2));
+const accounts = await trader.getAccounts();
+console.log(JSON.stringify(accounts.data, null, 2));
 
 const md = new MarketData(config);
-md.on("token", async (payload: any) => {
-  // save token to database...
-  await saveTokenToDb(payload);
-});
+md.on("token", saveTokenToDb);
 const result = await md.getPriceHistory();
 console.log(JSON.stringify(result.data, null, 2));
 

@@ -26,7 +26,7 @@ function refreshAndRetryInterceptor(client: Base) {
         const { data } = await refreshAccessToken(client);
         const token = parseToken(data);
 
-        Object.assign(client.config, token);
+        Object.assign(client.config.token, token);
         client.emitter.emit("token", token);
 
         //@ts-ignore
