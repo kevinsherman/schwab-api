@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 import { Db } from "mongodb";
+import { setupInterceptors } from "./interceptors";
 
 class Trader {
   config: any = {};
@@ -22,7 +23,7 @@ class Trader {
       this.config.refreshAndRetry = process.env.REFRESH_AND_RETRY;
     }
 
-    this.init();
+    setupInterceptors(this);
   }
 
   async getAccounts() {
@@ -32,39 +33,6 @@ class Trader {
   async getAccountNumbers() {
     return this.axios.get("/accounts/accountNumbers");
   }
-
-  init() {
-    this.axios.interceptors.request.use((config) => {
-      if (this.config.accessToken) {
-        config.headers["Authorization"] = `Bearer ${this.config.accessToken}`;
-      }
-      return config;
-    });
-
-    this.axios.interceptors.response.use(
-      (response: any) => response,
-      (error: any) => {
-        if (error.response.status === 401) {
-          const originalRequest = error.config;
-          const condition =
-            this.config.refreshAndRetry &&
-            error.response.status === 401 &&
-            !originalRequest._retry &&
-            originalRequest.url !== "https://api.schwabapi.com/v1/oauth/token";
-          if (condition) {
-            originalRequest._retry = true;
-            return this.refreshAccessToken().then(() => {
-              originalRequest.headers.Authorization = `Bearer ${this.config.accessToken}`;
-              return this.axios(originalRequest);
-            });
-          }
-
-          return Promise.reject(error);
-        }
-      }
-    );
-  }
-
   async refreshAccessToken() {
     const data = {
       grant_type: "refresh_token",
