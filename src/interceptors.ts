@@ -31,7 +31,6 @@ function refreshAndRetryInterceptor(client: Base) {
 
         //@ts-ignore
         originalRequest._retry = true;
-        originalRequest.headers.Authorization = `Bearer ${client.config.token.accessToken}`;
         return client.axios(originalRequest);
       }
       return Promise.reject(error);
@@ -62,11 +61,11 @@ function parseToken(data: any) {
   };
   // remove props with falsey values
   return filterObj(res, (value) => value);
-} // parseToken()
+}
 
 function timeFromNow(seconds: number) {
   return seconds ? new Date(Date.now() + 1000 * seconds).toString() : undefined;
-} // getTimeFromNow()
+}
 
 function filterObj(obj: object, cb: Function): object {
   return Object.keys(obj).reduce((acc, cur) => {

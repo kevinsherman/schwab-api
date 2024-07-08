@@ -13,7 +13,6 @@ if (!token) {
 }
 
 const config = {
-  db,
   token,
 };
 
@@ -22,7 +21,9 @@ const trader = new Trader(config);
 trader.on("token", saveTokenToDb);
 
 // attempt to get account information
-const accounts = await trader.getAccounts();
+const accounts = await trader.getAccountNumbers();
+const account = await trader.getAccount(accounts.data[0].hashValue);
+console.log(JSON.stringify(account.data, null, 2));
 console.log(JSON.stringify(accounts.data, null, 2));
 
 const md = new MarketData(config);
