@@ -26,6 +26,7 @@ export const defaults: Config = {
   ).toString("base64"),
   refreshAndRetry: true,
   baseURL: "https://api.schwabapi.com/v1/oauth/token",
+  onNewTokenFunc: (token) => {},
   token: {
     accessToken: "",
     refreshToken: "",
@@ -39,6 +40,7 @@ export type Config = {
   authorization?: string;
   refreshAndRetry?: boolean;
   baseURL?: string;
+  onNewTokenFunc?: (token: any) => void;
   token: {
     accessToken: string;
     refreshToken: string;

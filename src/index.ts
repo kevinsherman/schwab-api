@@ -1,5 +1,5 @@
-import MarketData from "./MarketData";
-import Trader from "./Trader";
+import { Config } from "./Base";
+import Client from "./Client";
 import mongo from "./config/mongo";
 import { getTokenFromDb } from "./resources/tokens";
 
@@ -12,23 +12,19 @@ if (!token) {
   console.log("No token found, must login to create token.");
 }
 
-const config = {
+const config: Partial<Config> = {
   token,
+  onNewTokenFunc: saveTokenToDb,
 };
 
-// initialize trader
-const trader = new Trader(config);
-trader.on("token", saveTokenToDb);
+const client = new Client(config);
 
-// attempt to get account information
-const accounts = await trader.getAccountNumbers();
-const account = await trader.getAccount(accounts.data[0].hashValue);
+const accounts = await client.Trader.getAccountNumbers();
+const account = await client.Trader.getAccount(accounts.data[0].hashValue);
 console.log(JSON.stringify(account.data, null, 2));
 console.log(JSON.stringify(accounts.data, null, 2));
 
-const md = new MarketData(config);
-md.on("token", saveTokenToDb);
-const result = await md.getPriceHistory();
+const result = await client.MarketData.getPriceHistory();
 console.log(JSON.stringify(result.data, null, 2));
 
 await mongo.close();
