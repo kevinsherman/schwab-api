@@ -14,9 +14,9 @@ class Base {
     setupInterceptors(this);
   }
 
-  // on(event, fn) {
-  //   return this.emitter.on(event, fn);
-  // }
+  on(event: string, fn: (...args: any[]) => void) {
+    return this.emitter.on(event, fn);
+  }
 }
 
 export default Base;
