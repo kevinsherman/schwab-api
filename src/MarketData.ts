@@ -6,8 +6,8 @@ class MarketData extends Base {
     super(config);
   }
 
-  async getPriceHistory() {
-    return this.axios.get("/pricehistory?symbol=AAPL");
+  async getPriceHistory(symbol: string) {
+    return this.axios.get(`/pricehistory?symbol=${symbol}`);
   }
 }
 

@@ -1,5 +1,5 @@
-import MarketData from "./MarketData";
-import Trader from "./Trader";
+import { Config } from "./Base";
+import Client from "./Client";
 import mongo from "./config/mongo";
 import { getTokenFromDb } from "./resources/tokens";
 import { Token } from "./types";

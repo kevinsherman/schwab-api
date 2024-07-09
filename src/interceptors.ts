@@ -32,7 +32,6 @@ function refreshAndRetryInterceptor(client: Base) {
 
         //@ts-ignore
         originalRequest._retry = true;
-        originalRequest.headers.Authorization = `Bearer ${client.config.token!.accessToken}`;
         return client.axios(originalRequest);
       }
       return Promise.reject(error);

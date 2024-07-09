@@ -10,6 +10,10 @@ class Trader extends Base {
     return this.axios.get("/accounts");
   }
 
+  async getAccount(accountNumber: string) {
+    return this.axios.get(`/accounts/${accountNumber}`);
+  }
+
   async getAccountNumbers() {
     return this.axios.get("/accounts/accountNumbers");
   }

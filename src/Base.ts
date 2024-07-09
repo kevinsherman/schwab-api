@@ -31,8 +31,6 @@ export const defaults: Config = {
 };
 
 export type Config = {
-  accessToken?: string;
-  refreshToken?: string;
   authorization?: string;
   refreshAndRetry?: boolean;
   baseURL?: string;
