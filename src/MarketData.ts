@@ -1,7 +1,7 @@
-import Base from "./Base";
+import Base, { Config } from "./Base";
 
 class MarketData extends Base {
-  constructor(config: any) {
+  constructor(config: Config) {
     config.baseURL = "https://api.schwabapi.com/marketdata/v1";
     super(config);
   }

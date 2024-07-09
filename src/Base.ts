@@ -1,22 +1,22 @@
 import axios, { AxiosInstance } from "axios";
-import { Db } from "mongodb";
 import { setupInterceptors } from "./interceptors";
 import EventEmitter from "eventemitter3";
+import { Token } from "./types";
 
 class Base {
-  config: any;
+  config: Config;
   axios: AxiosInstance;
   emitter = new EventEmitter();
 
   constructor(config: Partial<Config>) {
-    this.config = Object.assign({}, defaults, config, () => {});
+    this.config = Object.assign({}, defaults, config, () => { });
     this.axios = axios.create({ baseURL: this.config.baseURL });
     setupInterceptors(this);
   }
 
-  on(event, fn) {
-    return this.emitter.on(event, fn);
-  }
+  // on(event, fn) {
+  //   return this.emitter.on(event, fn);
+  // }
 }
 
 export default Base;
@@ -27,14 +27,7 @@ export const defaults: Config = {
   ).toString("base64"),
   refreshAndRetry: true,
   baseURL: "https://api.schwabapi.com/v1/oauth/token",
-  db: null,
-  token: {
-    access_token: "",
-    refresh_token: "",
-    token_type: "",
-    expires_in: 0,
-    scope: "",
-  },
+  token: undefined
 };
 
 export type Config = {
@@ -43,12 +36,5 @@ export type Config = {
   authorization?: string;
   refreshAndRetry?: boolean;
   baseURL?: string;
-  db: Db | null;
-  token: {
-    access_token: string;
-    refresh_token: string;
-    token_type: string;
-    expires_in: number;
-    scope: string;
-  };
+  token?: Token;
 };

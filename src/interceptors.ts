@@ -1,11 +1,12 @@
 import { AxiosError } from "axios";
 import Base from "./Base";
 import { refreshAccessToken } from "./resources/tokens";
+import { TokenResponse, Token } from "./types";
 
 function appendAccessTokenInterceptor(client: Base) {
   client.axios.interceptors.request.use((request) => {
-    if (client.config.token.accessToken) {
-      request.headers.Authorization = `Bearer ${client.config.token.accessToken}`;
+    if (client.config.token!.accessToken) {
+      request.headers.Authorization = `Bearer ${client.config.token!.accessToken}`;
     }
     return request;
   });
@@ -26,12 +27,12 @@ function refreshAndRetryInterceptor(client: Base) {
         const { data } = await refreshAccessToken(client);
         const token = parseToken(data);
 
-        Object.assign(client.config.token, token);
+        Object.assign(client.config.token!, token);
         client.emitter.emit("token", token);
 
         //@ts-ignore
         originalRequest._retry = true;
-        originalRequest.headers.Authorization = `Bearer ${client.config.token.accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${client.config.token!.accessToken}`;
         return client.axios(originalRequest);
       }
       return Promise.reject(error);
@@ -50,7 +51,7 @@ export function setupInterceptors(client: Base) {
   });
 }
 
-function parseToken(data: any) {
+function parseToken(data: TokenResponse): Token {
   const res = {
     accessToken: data.access_token,
     accessTokenExpiresAt: timeFromNow(data.expires_in),
@@ -61,12 +62,12 @@ function parseToken(data: any) {
     expiresIn: data.expires_in,
   };
   // remove props with falsey values
-  return filterObj(res, (value) => value);
-} // parseToken()
+  return filterObj(res, (value: any) => value) as Token;
+}
 
 function timeFromNow(seconds: number) {
   return seconds ? new Date(Date.now() + 1000 * seconds).toString() : undefined;
-} // getTimeFromNow()
+}
 
 function filterObj(obj: object, cb: Function): object {
   return Object.keys(obj).reduce((acc, cur) => {

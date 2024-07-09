@@ -1,7 +1,7 @@
-import Base from "./Base";
+import Base, { Config } from "./Base";
 
 class Trader extends Base {
-  constructor(config: any) {
+  constructor(config: Partial<Config>) {
     config.baseURL = "https://api.schwabapi.com/trader/v1";
     super(config);
   }
