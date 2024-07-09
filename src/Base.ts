@@ -9,7 +9,7 @@ class Base {
   emitter = new EventEmitter();
 
   constructor(config: Partial<Config>) {
-    this.config = Object.assign({}, defaults, config, () => { });
+    this.config = Object.assign({}, defaults, config, () => {});
     this.axios = axios.create({ baseURL: this.config.baseURL });
     setupInterceptors(this);
   }
@@ -27,7 +27,7 @@ export const defaults: Config = {
   ).toString("base64"),
   refreshAndRetry: true,
   baseURL: "https://api.schwabapi.com/v1/oauth/token",
-  token: undefined
+  token: undefined,
 };
 
 export type Config = {
@@ -35,4 +35,5 @@ export type Config = {
   refreshAndRetry?: boolean;
   baseURL?: string;
   token?: Token;
+  onNewTokenFunc?: (token: Token) => void;
 };

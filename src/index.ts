@@ -7,30 +7,27 @@ import { Token } from "./types";
 // initialize database
 await mongo.connect();
 const db = mongo.db("stratbot_db");
+
+// get token
 const token = await getTokenFromDb(db);
 if (token) {
-
   const config = {
     token,
-  };
+    onNewTokenFunc: (token: Token) => saveTokenToDb(token),
+  } as Partial<Config>;
 
-  // initialize trader
-  const trader = new Trader(config);
-  trader.on("token", saveTokenToDb);
+  const client = new Client(config);
 
-  // attempt to get account information
-  const accounts = await trader.getAccounts();
+  const accounts = await client.Trader.getAccounts();
   console.log(JSON.stringify(accounts.data, null, 2));
 
-  const md = new MarketData(config);
-  md.on("token", saveTokenToDb);
-  const result = await md.getPriceHistory();
+  const result = await client.MarketData.getPriceHistory("AAPL");
   console.log(JSON.stringify(result.data, null, 2));
-
-  await mongo.close();
 } else {
   console.log("ain't no token, bruv");
 }
+
+await mongo.close();
 
 async function saveTokenToDb(token: Token) {
   const { refreshToken, ...rest } = token;
