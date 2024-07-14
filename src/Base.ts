@@ -9,6 +9,7 @@ class Base {
   emitter = new EventEmitter();
 
   constructor(config: Partial<Config>) {
+    this.config = Object.assign({}, defaults, config, () => { });
     this.axios = axios.create({ baseURL: this.config.baseURL });
     setupInterceptors(this);
   }
